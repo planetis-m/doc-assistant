@@ -14,6 +14,7 @@ Use this fixed internal workspace-local database:
 - `./.doc-assistant/docs.db`
 
 This path is fixed. Do not vary it during normal skill use.
+Do not inspect the database directly unless the user explicitly asks.
 
 ## Resolve Input
 
@@ -31,7 +32,7 @@ This skill is text-first.
 - Check with `command -v cvstore` and `command -v cvquery`.
 - If either command is missing, read [references/chunkvec-install.md](references/chunkvec-install.md) and attempt installation.
 - Retry the missing check after installation. If the required command is still missing, stop and report.
-- Request unrestricted network or escalated execution directly in the tool call when installation or tool execution requires it.
+- Request unrestricted network or escalated execution directly in the tool call for `cvstore` and `cvquery`, since both require network access.
 - Do not inspect shell profiles, environment files, or arbitrary filesystem files to discover API keys.
 - If `cvstore` or `cvquery` reports an auth or config failure, report the error and ask the user to configure `DEEPINFRA_API_KEY` or `config.json`, then retry.
 
