@@ -1,4 +1,4 @@
 interface:
   display_name: "Doc Assistant"
-  short_description: "Chunk, label, store, and query chunkvec documents"
-  default_prompt: "Use $doc-assistant to chunk this material into semantically coherent chunkvec input with stable topic labels, then prepare or run cvstore and cvquery as needed."
+  short_description: "Store and search chunkvec documents with a fixed workspace DB"
+  default_prompt: "Use $doc-assistant in store or search mode with the default workspace database, chunk and label content for chunkvec, and infer cvquery filters from natural-language intent when the cues are clear."

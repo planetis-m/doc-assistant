@@ -3,6 +3,14 @@
 Use these examples when the source structure is not enough to decide chunk
 boundaries or labels.
 
+## Default workspace database
+
+Unless the user overrides it, use:
+
+```text
+./.doc-assistant/chunkvec.sqlite
+```
+
 ## Chunking principles
 
 - Keep each chunk on one dominant topic.
@@ -60,3 +68,66 @@ How does dropout reduce overfitting?
 
 Label matching is a normalized substring match, so stable reusable labels help
 group related chunks and make filtered retrieval predictable.
+
+## Example: store mode prompt
+
+```text
+Use $doc-assistant in store mode on chapter1.md.
+```
+
+Expected behavior:
+
+- chunk and label the source
+- write ingest input under `./.doc-assistant/`
+- store into `./.doc-assistant/chunkvec.sqlite`
+
+## Example: plain semantic search
+
+```text
+Use $doc-assistant in search mode for: how do embeddings help search?
+```
+
+Expected query file:
+
+```text
+How do embeddings help search?
+```
+
+## Example: infer kind and label from natural language
+
+```text
+Use $doc-assistant in search mode for my derived notes about regularization.
+```
+
+Expected query file:
+
+```text
+<search kind=derived label="Regularization">
+
+my derived notes about regularization
+```
+
+## Example: infer source plus topic
+
+```text
+Use $doc-assistant in search mode for the original source chunks on vector search.
+```
+
+Expected query file:
+
+```text
+<search kind=source label="Vector Search">
+
+the original source chunks on vector search
+```
+
+## Example: ambiguous cue should stay semantic
+
+```text
+Use $doc-assistant in search mode for what page 12 says about dropout.
+```
+
+Expected behavior:
+
+- do not assume `position=12` unless the stored numbering is explicitly page-based
+- keep the request as semantic query text if that mapping is unknown

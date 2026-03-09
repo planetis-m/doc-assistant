@@ -7,6 +7,20 @@ description: Prepare, chunk, label, store, and query source and derived document
 
 Follow this workflow exactly to prepare document content for `chunkvec`.
 
+## Default Paths
+
+Unless the user explicitly asks for a different database path, use this fixed
+workspace-local database:
+
+- `./.doc-assistant/chunkvec.sqlite`
+
+Keep this path stable across executions in the same workspace.
+
+For agent-managed temporary input files:
+
+- place ingest and query text files under `./.doc-assistant/`
+- do not require the user to name those paths explicitly
+
 ## Resolve Input
 
 This skill is text-first.
@@ -40,6 +54,25 @@ Always prepare the text yourself before running `cvstore` or `cvquery`.
 
 - `cvstore INPUT.txt DB.sqlite`
 - `cvquery QUERY.txt DB.sqlite`
+
+## Mode Selection
+
+Map user intent into one of these two modes:
+
+- `store`: the user wants to add or refresh content in the database
+- `search`: the user wants retrieval from the database
+
+Use `store` for requests such as:
+
+- store this file
+- ingest these notes
+- add this document to the workspace database
+
+Use `search` for requests such as:
+
+- search my notes
+- find what the source says about dropout
+- query the stored material for regularization
 
 ## Chunking
 
@@ -119,6 +152,12 @@ Rules:
 - Prefer chunks that stand on their own during retrieval.
 - Ensure every generated chunk includes a `label`.
 
+In `store` mode:
+
+- write the ingest input to an agent-managed file under `./.doc-assistant/`
+- use `./.doc-assistant/chunkvec.sqlite` unless the user explicitly overrides the database path
+- run `cvstore` against that database path
+
 Run ingest with:
 
 ```bash
@@ -143,6 +182,31 @@ Query filter behavior:
 - `kind` is exact match
 - `position` is exact integer match
 - `label` is normalized substring match
+
+In `search` mode, infer filters from natural-language intent only when the cue
+is clear.
+
+Infer these filters:
+
+- `doc` only from an exact known document id or an explicitly named stored artifact
+- `kind=source` from cues like `source`, `original`, or `transcript`
+- `kind=derived` from cues like `derived`, `notes`, `summary`, `quiz`, or `flashcards`
+- `position` only from explicit chunk-position references that clearly map to the stored numbering scheme
+- `label` from stable topic phrases such as `Regularization`, `Vector Search`, or `Chain Rule`
+
+Do not infer filters when the cue is ambiguous.
+
+- Do not treat generic page references as `position` unless the stored material uses pages as positions.
+- Do not invent a `doc` filter from a loose description.
+- If confidence is low, leave the text as a plain semantic query instead of guessing.
+
+If no high-confidence filters are present, write only the semantic query text.
+
+In `search` mode:
+
+- write the query input to an agent-managed file under `./.doc-assistant/`
+- use `./.doc-assistant/chunkvec.sqlite` unless the user explicitly overrides the database path
+- run `cvquery` against that database path
 
 Use only the filters the user actually needs.
 
