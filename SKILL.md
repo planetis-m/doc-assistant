@@ -22,31 +22,18 @@ This skill is text-first.
 - Read plain text or markdown directly.
 - For PDFs or other binary documents, use a text transcription, not the binary file itself.
 - Do not invent content that is not present in the source.
-
-## Process chunkvec Input
-
-Always prepare the text yourself before running `cvstore` or `cvquery`.
-
-- Do not rely on upstream headings, page breaks, or paragraph boundaries as chunk boundaries by default.
+- Always prepare the text yourself before running `cvstore` or `cvquery`.
 - Rewrite only when needed to remove decorative boilerplate, repeated navigation text, or formatting noise that would hurt retrieval quality.
 - Preserve the source meaning. Do not add new facts.
 
-### Installation
+## Tool Readiness
 
 - Check with `command -v cvstore` and `command -v cvquery`.
 - If either command is missing, read [references/chunkvec-install.md](references/chunkvec-install.md) and attempt installation.
 - Retry the missing check after installation. If the required command is still missing, stop and report.
-
-### Execution
-
-- Request unrestricted network or escalated execution directly in the tool call when installation or `chunkvec` execution requires it.
+- Request unrestricted network or escalated execution directly in the tool call when installation or tool execution requires it.
 - Do not inspect shell profiles, environment files, or arbitrary filesystem files to discover API keys.
 - If `cvstore` or `cvquery` reports an auth or config failure, report the error and ask the user to configure `DEEPINFRA_API_KEY` or `config.json`, then retry.
-
-### Usage
-
-- `cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt DB.sqlite`
-- `cvquery [--doc=DOC] [--kind=source|derived] [--position=N] [--label=TEXT] QUERY DB.sqlite`
 
 ## Mode Selection
 
@@ -66,6 +53,13 @@ Use `search` for requests such as:
 - search my notes
 - find what the source says about dropout
 - query the stored material for regularization
+
+After choosing the mode, load only the relevant mode reference:
+
+- `store` -> [references/store-mode.md](references/store-mode.md)
+- `search` -> [references/search-mode.md](references/search-mode.md)
+
+Do not load both mode files unless the request truly spans both workflows.
 
 ## Stable Doc IDs
 
@@ -94,190 +88,6 @@ Examples:
 If the user provides pasted text with no stable file or title and later
 doc-specific retrieval may matter, ask for a short logical name before storing.
 
-## Chunking
+## Shared References
 
-The chunking policy must align with the embedding model used by `cvstore`, which defaults to `Qwen/Qwen3-Embedding-0.6B`.
-
-- Chunk by topic boundary, not by page shape.
-- Each chunk should cover one semantic unit or one tightly related concept cluster.
-- Preserve enough nearby context that the chunk still makes sense when retrieved alone.
-- Split when the dominant topic, argument, procedure, or example changes.
-- Prefer sentence-boundary splits.
-- Keep short lead-in context with lists, definitions, formulas, or procedure steps so the embedding captures what the item is about.
-- Do not combine unrelated topics just to make a chunk longer.
-- Do not emit empty chunks.
-
-Use moderately conservative chunk sizes:
-
-- preferred: about `100-280` words
-- soft upper bound: about `350` words
-- hard ceiling: about `450` words unless a clean split is impossible
-- shorter chunks are acceptable for atomic content such as a definition, theorem, quiz item, or short procedure
-
-## Topic Labels
-
-Use `label` when it improves retrieval grouping. It is optional, not required.
-
-- Use short human-readable topic phrases, preferably `2-5` words.
-- Use stable Title Case noun phrases such as `Vector Search`, `Regularization`, or `Chain Rule`.
-- Reuse the exact same label across chunks that belong to the same retrieval group.
-- Change the label only when the dominant topic actually changes.
-- Avoid labels that are too generic, such as `Notes`, `Concept`, or `Summary`.
-- Avoid labels that are too narrow, such as sentence-level paraphrases.
-- Avoid label drift across similar content. Do not alternate between near-synonyms for the same topic.
-- Keep labels descriptive but not overly specific.
-- Omit `label` when a chunk is still clear and useful without it.
-
-If the source needs more examples for chunking or label reuse, read [references/chunking-and-labels.md](references/chunking-and-labels.md).
-
-## Choose Metadata
-
-Split ingest metadata into two levels.
-
-Global ingest metadata, passed once on `cvstore`:
-
-- `doc`: stable logical document id for one stored artifact
-- `kind`: one of `source`, `derived`
-- `source`: optional provenance path passed via `--source`
-
-Per-chunk metadata, written inside each `<chunk ...>` marker:
-
-- `pos`: integer locator within that `doc`
-- `label`: optional short topic string
-
-Also provide `cvstore --source=RELATIVEPATH` on ingest so stored rows keep a
-useful provenance identity when that provenance is known.
-
-Apply these rules:
-
-- Use the stable typed-suffix scheme from `Stable Doc IDs` for `cvstore --doc=...`.
-- Use `--kind=source` for original material or faithful transcription.
-- Use `--kind=derived` for generated or rewritten material, including notes, lectures, quizzes, flashcards, essays, and summaries.
-- `pos` is required in every chunk marker even when the source has no native numbering. In that case, assign sequential positions.
-- Multiple chunks may share the same `pos`. `chunkvec` keeps chunk order separately through `ordinal`.
-- `label` is optional.
-- For quizzes, keep the question and its answer in the same chunk so retrieval returns a complete item without extra linking metadata.
-- One ingest file must represent exactly one logical artifact, so `doc` and `kind` stay fixed for the whole run.
-- If the user wants multiple artifact types, produce separate ingest files and separate `cvstore` runs.
-
-## Produce Ingest Input
-
-Write the material as repeated `<chunk ...>` markers plus non-empty chunk bodies.
-
-Example:
-
-```text
-<chunk pos=12 label="Regularization">
-Dropout disables random activations during training.
-
-<chunk pos=13>
-Regularization reduces overfitting by constraining model behavior.
-```
-
-Rules:
-
-- Do not emit legacy `<page ...>` markers.
-- Keep only the supported chunk-level metadata fields. Do not invent extra attributes.
-- Do not write `doc` or `kind` inside chunk markers.
-- Do not write legacy `position=` inside chunk markers.
-- Trim decorative boilerplate that hurts retrieval quality.
-- Keep chunk bodies non-empty and semantically coherent.
-- Prefer chunks that stand on their own during retrieval.
-- `label` is optional, not required.
-
-In `store` mode:
-
-- write the ingest input to an agent-managed temporary file when needed
-- always use the internal database
-- derive `doc` ids with the stable typed-suffix scheme and pass them via `cvstore --doc=...`
-- pass `--kind=source` or `--kind=derived` on `cvstore`
-- pass `--source` when a meaningful provenance path is known
-- run `cvstore` against that database path
-- never mix multiple `doc` or `kind` values in one ingest file
-
-When providing `--source`, choose it with these rules:
-
-- if there is a real source path or stable logical artifact path, use that as `--source`
-- do not use an internal temporary file path as `--source`
-
-Run ingest with:
-
-```bash
-cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt DB.sqlite
-```
-
-## Produce Query Input
-
-Always construct one raw semantic query string for `cvquery`.
-
-Example:
-
-```text
-Why does dropout reduce overfitting?
-```
-
-Query filter behavior is expressed on the `cvquery` command line:
-
-- `doc` is exact match
-- `kind` is exact match
-- `position` is exact integer match
-- `label` is normalized substring match
-
-In `search` mode, infer filters from natural-language intent only when the cue
-is an explicit request to narrow scope.
-
-Semantic search is the default.
-
-Treat these as explicit filtering requests:
-
-- `only`
-- `just`
-- `restrict`
-- `limit`
-- `filter`
-- `within`
-- `search in`
-- `search only in`
-- `from the source`
-- `from my notes`
-
-Infer these filters:
-
-- `doc` only when the user explicitly requests filtering and the stable base artifact and artifact type are both clear, using the same typed-suffix scheme as store mode
-- `kind=source` from cues like `source`, `original`, or `transcript`
-- `kind=derived` from cues like `derived`, `notes`, `summary`, `quiz`, or `flashcards`
-- `position` only from explicit chunk-position references that clearly map to the stored numbering scheme
-- `label` only when the user explicitly filters by topic or scoped subject, using stable topic phrases such as `Regularization`, `Vector Search`, or `Chain Rule`
-
-Do not infer filters when the cue is ambiguous.
-
-- Do not treat generic page references as `position` unless the stored material uses pages as positions.
-- Do not invent a `doc` filter from a loose description.
-- Do not invent a new base name during search.
-- Do not convert topic wording alone into a filter unless the user explicitly asks to constrain the search.
-- If confidence is low, leave the text as a plain semantic query instead of guessing.
-
-If the user does not explicitly request filtering, pass only the raw semantic query string and no filter flags.
-
-In `search` mode:
-
-- always use the internal database
-- pass one raw `QUERY` positional argument to `cvquery`
-- pass query filters through `cvquery` flags only when constrained retrieval is needed
-- run `cvquery` against that database path
-
-Use only the filters the user actually needs.
-
-When interpreting `cvquery` results:
-
-- do not mechanically echo the top `k` results
-- use the retrieved chunks to judge which results actually answer the user's question
-- prefer chunks that directly answer the query over nearby but broader topic matches
-- preserve useful metadata in the answer when it helps disambiguate results, especially `doc`, `kind`, `position`, and `label`
-- if the retrieved chunks do not support a reliable answer, say so instead of inventing one
-
-Run search with:
-
-```bash
-cvquery [--doc=DOC] [--kind=source|derived] [--position=N] [--label=TEXT] QUERY DB.sqlite
-```
+- For chunking and label examples during ingest, read [references/chunking-and-labels.md](references/chunking-and-labels.md).
