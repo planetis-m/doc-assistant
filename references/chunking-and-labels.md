@@ -63,7 +63,7 @@ gradients can be propagated layer by layer.
 ## Example: filtered search command
 
 ```text
-cvquery --doc=ml-unit-3-source --kind=source --label=regularization "How does dropout reduce overfitting?" ./.doc-assistant/chunkvec.sqlite
+cvquery --doc=ml-unit-3-source --kind=source --label=regularization "How does dropout reduce overfitting?" DB.sqlite
 ```
 
 Label matching is a normalized substring match, so stable reusable labels and
@@ -78,8 +78,8 @@ Use $doc-assistant in store mode on chapter1.md.
 Expected behavior:
 
 - chunk and label the source
-- write ingest input under `./.doc-assistant/`
-- store into the internal workspace database
+- write ingest input to an agent-managed temporary file if needed
+- store into the internal database
 - run `cvstore --doc=chapter1-source --kind=source ...`
 
 ## Example: store derived notes with stable naming

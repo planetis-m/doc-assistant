@@ -77,7 +77,7 @@ Nearest-neighbor search compares a query vector with stored vectors.
 Example command shape:
 
 ```text
-cvstore --doc=chapter1-source --kind=source INPUT.txt ./.doc-assistant/chunkvec.sqlite
+cvstore --doc=chapter1-source --kind=source INPUT.txt DB.sqlite
 ```
 
 ### Search

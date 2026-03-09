@@ -9,17 +9,12 @@ Follow this workflow exactly to prepare document content for `chunkvec`.
 
 ## Internal Paths
 
-Use this fixed internal workspace-local database:
+Use one fixed internal workspace-local database.
 
-- `./.doc-assistant/chunkvec.sqlite`
-
-This path never changes during normal skill use and should not be presented as
-a user-facing choice.
-
-For agent-managed temporary input files:
-
-- place ingest and query text files under `./.doc-assistant/`
-- do not require the user to name those paths explicitly
+- Keep the exact database path as an implementation detail.
+- Do not present internal storage paths as a user-facing choice.
+- Use agent-managed temporary files when `cvstore` needs file input.
+- Do not require the user to name internal temp paths explicitly.
 
 ## Resolve Input
 
@@ -153,8 +148,7 @@ Per-chunk metadata, written inside each `<chunk ...>` marker:
 - `label`: optional short topic string
 
 Also provide `cvstore --source=RELATIVEPATH` on ingest so stored rows keep a
-useful provenance path instead of the temporary `.doc-assistant/...-ingest.txt`
-file when that provenance is known.
+useful provenance identity when that provenance is known.
 
 Apply these rules:
 
@@ -195,8 +189,8 @@ Rules:
 
 In `store` mode:
 
-- write the ingest input to an agent-managed file under `./.doc-assistant/`
-- always use the internal database at `./.doc-assistant/chunkvec.sqlite`
+- write the ingest input to an agent-managed temporary file when needed
+- always use the internal database
 - derive `doc` ids with the stable typed-suffix scheme and pass them via `cvstore --doc=...`
 - pass `--kind=source` or `--kind=derived` on `cvstore`
 - pass `--source` when a meaningful provenance path is known
@@ -207,8 +201,8 @@ When providing `--source`, choose it with these rules:
 
 - if the stored artifact comes from one clear original file, use that original relative path
 - if the stored artifact comes from multiple originals or has no single real source file, use a stable logical artifact path for what is being stored
-- never use the temporary ingest file path under `./.doc-assistant/` as `--source` unless there is truly no better identity available
-- leave `--source` empty rather than reusing the temporary ingest file path
+- never use an internal temporary ingest file path as `--source` unless there is truly no better identity available
+- leave `--source` empty rather than reusing an internal temporary file path
 
 Run ingest with:
 
@@ -271,7 +265,7 @@ If the user does not explicitly request filtering, pass only the raw semantic qu
 
 In `search` mode:
 
-- always use the internal database at `./.doc-assistant/chunkvec.sqlite`
+- always use the internal database
 - pass one raw `QUERY` positional argument to `cvquery`
 - pass query filters through `cvquery` flags only when constrained retrieval is needed
 - run `cvquery` against that database path
@@ -285,7 +279,7 @@ When interpreting `cvquery` results:
 - prefer chunks that directly mention the requested case, person, event, or concept over broader nearby topic summaries
 - when both `kind=source` and `kind=derived` appear, prefer `source` for factual description and `derived` for concise explanation
 - preserve useful metadata in the answer, especially `doc`, `kind`, `position`, and `label`
-- do not surface internal `.doc-assistant/...` paths as citations unless the user explicitly asks for raw tool output
+- do not surface internal temp paths or hidden storage paths unless the user explicitly asks for raw tool output
 
 Run search with:
 
