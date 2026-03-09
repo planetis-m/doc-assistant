@@ -48,7 +48,7 @@ Treat these as explicit filtering requests:
 
 Infer these filters:
 
-- `doc` only when the user explicitly requests filtering and the stable base artifact and artifact type are both clear, using the same typed-suffix scheme as store mode
+- `doc` only when the user explicitly requests filtering and the stable document identity is clear, using the same scheme as store mode
 - `kind=source` from cues like `source`, `original`, or `transcript`
 - `kind=derived` from cues like `derived`, `notes`, `summary`, `quiz`, or `flashcards`
 - `position` only from explicit chunk-position references that clearly map to the stored numbering scheme
@@ -60,6 +60,8 @@ Do not infer filters when the cue is ambiguous.
 - Do not invent a `doc` filter from a loose description.
 - Do not invent a new base name during search.
 - Do not convert topic wording alone into a filter unless the user explicitly asks to constrain the search.
+- Do not treat `source` provenance paths as query filters; `cvquery` does not support them.
+- Do not promise exact notes-vs-quiz-vs-flashcards filtering; that subtype is not a first-class query field.
 - If confidence is low, leave the text as a plain semantic query instead of guessing.
 
 If the user does not explicitly request filtering, pass only the raw semantic query string and no filter flags.

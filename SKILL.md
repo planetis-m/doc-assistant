@@ -65,25 +65,19 @@ Do not load both mode files unless the request truly spans both workflows.
 
 `doc` ids must be deterministic across store and search runs.
 
-Derive a lowercase kebab-case `base` from one stable source identity:
+Derive a lowercase kebab-case `doc` from one stable source identity:
 
 - prefer the source file stem, such as `chapter1.md` -> `chapter1`
 - otherwise use an explicit logical title supplied by the user
-- do not invent a fresh one-off base when stable retrieval later may matter
+- do not invent a fresh one-off name when stable retrieval later may matter
 
-Then apply exactly one typed suffix:
-
-- source, original, transcript -> `-source`
-- notes, summary, study-notes, lecture, eli5 -> `-notes`
-- quiz -> `-quiz`
-- flashcards -> `-flashcards`
-- essay -> `-essay`
+Keep `doc` focused on the document identity.
 
 Examples:
 
-- `chapter1-source`
-- `chapter1-notes`
-- `chapter1-quiz`
+- source text for `chapter1.md` -> `chapter1`
+- derived notes for `chapter1.md` -> `chapter1`
+- quiz for `chapter1.md` -> `chapter1`
 
 If the user provides pasted text with no stable file or title and later
 doc-specific retrieval may matter, ask for a short logical name before storing.

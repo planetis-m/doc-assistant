@@ -48,7 +48,7 @@ Use $doc-assistant in search mode and search only in my chapter1 notes for regul
 
 Expected behavior:
 
-- pass `--doc=chapter1-notes --kind=derived --label=Regularization` to `cvquery`
+- pass `--doc=chapter1 --kind=derived --label=Regularization` to `cvquery`
 - pass the raw query string as the `QUERY` positional argument
 
 ## Example: ambiguous cue stays semantic
@@ -61,4 +61,4 @@ Expected behavior:
 
 - do not assume `position=12` unless the stored numbering is explicitly page-based
 - keep the request as the raw semantic query string if that mapping is unknown
-- do not invent a `doc` filter if the base artifact is unknown
+- do not invent a `doc` filter if the document identity is unknown

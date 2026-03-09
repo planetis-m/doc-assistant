@@ -63,7 +63,7 @@ Split ingest metadata into two levels.
 
 Global ingest metadata, passed once on `cvstore`:
 
-- `doc`: stable logical document id for one stored artifact
+- `doc`: stable logical document id for the document identity
 - `kind`: one of `source`, `derived`
 - `source`: optional provenance path passed via `--source`
 
@@ -76,7 +76,7 @@ Also provide `cvstore --source=RELATIVEPATH` on ingest so stored rows keep a use
 
 Apply these rules:
 
-- Use the stable typed-suffix scheme from `SKILL.md` for `cvstore --doc=...`.
+- Derive `doc` from the stable document identity, such as `chapter1`.
 - Use `--kind=source` for original material or faithful transcription.
 - Use `--kind=derived` for generated or rewritten material, including notes, lectures, quizzes, flashcards, essays, and summaries.
 - `pos` is required in every chunk marker even when the source has no native numbering. In that case, assign sequential positions.
@@ -84,6 +84,7 @@ Apply these rules:
 - `label` is optional.
 - For quizzes, keep the question and its answer in the same chunk so retrieval returns a complete item without extra linking metadata.
 - One ingest file must represent exactly one logical artifact, so `doc` and `kind` stay fixed for the whole run.
+- Multiple artifact variants may share the same `doc` when they come from the same document identity.
 - If the user wants multiple artifact types, produce separate ingest files and separate `cvstore` runs.
 
 ## Ingest Input
@@ -115,7 +116,7 @@ Rules:
 
 - Write the ingest input to an agent-managed temporary file when needed.
 - Always use the internal database.
-- Derive `doc` ids with the stable typed-suffix scheme and pass them via `cvstore --doc=...`.
+- Derive stable `doc` ids and pass them via `cvstore --doc=...`.
 - Pass `--kind=source` or `--kind=derived` on `cvstore`.
 - Pass `--source` when a meaningful provenance path is known.
 - Run `cvstore` against that database path.
