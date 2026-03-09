@@ -1,0 +1,4 @@
+interface:
+  display_name: "Doc Assistant"
+  short_description: "Prepare ingest and query documents"
+  default_prompt: "Use $doc-assistant to prepare this material for marked-up ingest or filtered search with concrete document ids plus doc, kind, position, and label metadata."
