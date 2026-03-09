@@ -1,28 +1,27 @@
 ---
 name: doc-assistant
-description: Prepare, chunk, label, store, and query source and derived documents for `chunkvec` using sparse `<chunk pos=...>` markers plus global `cvstore` metadata and `cvquery` CLI filters. Use when a task involves turning text or markdown into semantically coherent ingest input or explicit-filter search commands for `cvstore` and `cvquery`.
+description: Prepare text or markdown documents for semantic storage and retrieval, including chunking, labeling, storing, refreshing, and searching document collections. Use when a task involves adding notes, transcripts, or source documents to a reusable document store, or searching previously stored material with optional metadata filters.
 ---
 
 # Doc Assistant
 
-Follow this workflow exactly to prepare document content for `chunkvec`.
+Follow this workflow exactly to prepare document content for storage and retrieval.
 
 ## Internal Paths
 
-Use one fixed internal workspace-local database.
+Use this fixed internal workspace-local database:
 
-- Keep the exact database path as an implementation detail.
-- Do not present internal storage paths as a user-facing choice.
-- Use agent-managed temporary files when `cvstore` needs file input.
-- Do not require the user to name internal temp paths explicitly.
+- `./.doc-assistant/docs.db`
+
+This path is fixed. Do not vary it during normal skill use.
 
 ## Resolve Input
 
 This skill is text-first.
 
-- If the source is plain text or markdown, read it directly.
-- If the source is a PDF or another binary document, work from a text or markdown transcription rather than the binary file itself.
-- Do not invent content that is not present in the provided source.
+- Read plain text or markdown directly.
+- For PDFs or other binary documents, use a text transcription, not the binary file itself.
+- Do not invent content that is not present in the source.
 
 ## Process chunkvec Input
 
@@ -34,10 +33,9 @@ Always prepare the text yourself before running `cvstore` or `cvquery`.
 
 ### Installation
 
-- Check with `command -v cvstore`.
-- Check with `command -v cvquery`.
+- Check with `command -v cvstore` and `command -v cvquery`.
 - If either command is missing, read [references/chunkvec-install.md](references/chunkvec-install.md) and attempt installation.
-- Retry both `command -v` checks after installation. If either command is still missing, stop and report.
+- Retry the missing check after installation. If the required command is still missing, stop and report.
 
 ### Execution
 
@@ -109,11 +107,11 @@ The chunking policy must align with the embedding model used by `cvstore`, which
 - Do not combine unrelated topics just to make a chunk longer.
 - Do not emit empty chunks.
 
-Use conservative chunk sizes:
+Use moderately conservative chunk sizes:
 
-- preferred: about `80-220` words
-- soft upper bound: about `300` words
-- hard ceiling: about `400` words unless a clean split is impossible
+- preferred: about `100-280` words
+- soft upper bound: about `350` words
+- hard ceiling: about `450` words unless a clean split is impossible
 - shorter chunks are acceptable for atomic content such as a definition, theorem, quiz item, or short procedure
 
 ## Topic Labels
@@ -199,10 +197,8 @@ In `store` mode:
 
 When providing `--source`, choose it with these rules:
 
-- if the stored artifact comes from one clear original file, use that original relative path
-- if the stored artifact comes from multiple originals or has no single real source file, use a stable logical artifact path for what is being stored
-- never use an internal temporary ingest file path as `--source` unless there is truly no better identity available
-- leave `--source` empty rather than reusing an internal temporary file path
+- if there is a real source path or stable logical artifact path, use that as `--source`
+- do not use an internal temporary file path as `--source`
 
 Run ingest with:
 
@@ -276,10 +272,9 @@ When interpreting `cvquery` results:
 
 - do not mechanically echo the top `k` results
 - use the retrieved chunks to judge which results actually answer the user's question
-- prefer chunks that directly mention the requested case, person, event, or concept over broader nearby topic summaries
-- when both `kind=source` and `kind=derived` appear, prefer `source` for factual description and `derived` for concise explanation
-- preserve useful metadata in the answer, especially `doc`, `kind`, `position`, and `label`
-- do not surface internal temp paths or hidden storage paths unless the user explicitly asks for raw tool output
+- prefer chunks that directly answer the query over nearby but broader topic matches
+- preserve useful metadata in the answer when it helps disambiguate results, especially `doc`, `kind`, `position`, and `label`
+- if the retrieved chunks do not support a reliable answer, say so instead of inventing one
 
 Run search with:
 

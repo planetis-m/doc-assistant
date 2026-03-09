@@ -78,20 +78,7 @@ Use $doc-assistant in store mode on chapter1.md.
 Expected behavior:
 
 - chunk and label the source
-- write ingest input to an agent-managed temporary file if needed
-- store into the internal database
 - run `cvstore --doc=chapter1-source --kind=source ...`
-
-## Example: store derived notes with stable naming
-
-```text
-Use $doc-assistant to store derived notes for chapter1.md.
-```
-
-Expected behavior:
-
-- keep the same base name `chapter1`
-- run `cvstore --doc=chapter1-notes --kind=derived ...`
 
 ## Example: sparse ingest markers
 
@@ -131,17 +118,6 @@ Use $doc-assistant in search mode and search only in my chapter1 notes for regul
 Expected behavior:
 
 - pass `--doc=chapter1-notes --kind=derived --label=Regularization` to `cvquery`
-- pass the raw query string as the `QUERY` positional argument
-
-## Example: explicit source-scoped search
-
-```text
-Use $doc-assistant in search mode and search within the chapter1 source for vector search.
-```
-
-Expected behavior:
-
-- pass `--doc=chapter1-source --kind=source --label=Vector Search` to `cvquery`
 - pass the raw query string as the `QUERY` positional argument
 
 ## Example: topic mention without explicit filtering stays semantic
