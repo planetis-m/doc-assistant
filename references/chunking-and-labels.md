@@ -14,12 +14,12 @@ boundaries, label reuse, or explicit search filters.
 ## Example: one topic over multiple chunks
 
 ```text
-<chunk pos=12 label="Regularization">
+<chunk page=12 label="Regularization">
 Regularization reduces overfitting by limiting how closely a model can match
 training noise. Common methods include penalties on weights and structured
 randomness during training.
 
-<chunk pos=13 label="Regularization">
+<chunk page=13 label="Regularization">
 Dropout is a regularization method that disables random activations during
 training so the network cannot depend too heavily on a single pathway.
 ```
@@ -29,11 +29,11 @@ Keep the same label because both chunks stay in the same retrieval group.
 ## Example: topic shift requires a new label
 
 ```text
-<chunk pos=14 label="Vector Search">
+<chunk page=14 label="Vector Search">
 Nearest-neighbor search compares a query vector with stored vectors and returns
 the closest matches by distance.
 
-<chunk pos=15 label="Embedding Models">
+<chunk page=15 label="Embedding Models">
 Embedding models map text into vectors so semantically similar passages stay
 close in vector space.
 ```
@@ -59,6 +59,6 @@ Use $doc-assistant in search mode for what page 12 says about dropout.
 
 Expected behavior:
 
-- do not assume `position=12` unless the stored numbering is explicitly page-based
+- do not assume `--page=12` unless the stored numbering is explicitly page-based
 - keep the request as the raw semantic query string if that mapping is unknown
 - do not invent a `doc` filter if the document identity is unknown

@@ -12,7 +12,7 @@ It provides two modes:
 
 This skill is designed for source material that needs to be stored and searched
 through `chunkvec` while preserving document ids, source/derived kind,
-positions, reusable topic labels, and provenance paths when available.
+optional page metadata, reusable topic labels, and provenance paths when available.
 
 `doc` names the document identity, such as `chapter1`. Use `kind` for `source`
 versus `derived`. Subtypes such as notes, quiz, or flashcards are not
