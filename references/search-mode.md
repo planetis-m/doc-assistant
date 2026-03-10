@@ -72,10 +72,15 @@ If the user does not explicitly request filtering, pass only the raw semantic qu
 - Run `cvquery` against that database path.
 - Use only the filters the user actually needs.
 
-## Interpreting Results
+## Outputting Results
 
-- Do not mechanically echo the top `k` results.
-- Use the retrieved chunks to judge which results actually answer the user's question.
-- Prefer chunks that directly answer the query over nearby but broader topic matches.
-- Do not frame the answer as commentary about the material. Present content directly.
-- If the retrieved chunks do not support a reliable answer, say so instead of inventing one.
+- Evaluate the retrieved chunks against the user's specific query.
+- Filter out any irrelevant or overly broad chunks that do not directly answer the query.
+- Rerank the remaining chunks so the most directly relevant ones appear first.
+- Output the exact text of these filtered and reranked chunks verbatim.
+- Do not summarize, synthesize, rephrase, or interpret the retrieved chunks.
+- Output the exact text of the retrieved chunks verbatim.
+- Simply remove the `<chunk ...>` metadata markers and print the raw text.
+- Do not add any introductory framing, commentary, or transitional phrases (e.g., do not say "Here are the results...", "The material says...", or "Based on the text...").
+- Do not offer unsolicited follow-up searches or list alternative queries.
+- If no results match, simply say so directly.
