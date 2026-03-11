@@ -22,6 +22,10 @@ Example:
 Why does dropout reduce overfitting?
 ```
 
+- Build `QUERY` from the user's wording.
+- If the user asks for "all results" within explicit filters and gives no topical
+  query, use a neutral query derived from that wording.
+
 Query filter behavior is expressed on the `cvquery` command line:
 
 - `doc` is exact match
@@ -48,15 +52,17 @@ Treat these as explicit filtering requests:
 
 Infer these filters:
 
-- `doc` only when the user explicitly requests filtering and the stable document identity is clear, using the same scheme as store mode
+- `doc` only when the user explicitly requests filtering and the stable document identity is clear, using the same source-to-`doc` scheme as store mode
 - `kind=source` from cues like `source`, `original`, or `transcript`
 - `kind=derived` from cues like `derived`, `notes`, `summary`, `quiz`, or `flashcards`
-- `page` only from explicit page references that clearly map to the stored numbering scheme
+- `page` only from explicit page references that clearly map to the source's own numbering
 - `label` only when the user explicitly filters by topic or scoped subject, using stable topic phrases such as `Regularization`, `Vector Search`, or `Chain Rule`
+
+When the user names a source path, filename, or explicit document title, derive
+`doc` from that source identity before running `cvquery`.
 
 Do not infer filters when the cue is ambiguous.
 
-- Do not treat generic page references as `page` unless the stored material uses page metadata.
 - Do not invent a `doc` filter from a loose description.
 - Do not invent a new base name during search.
 - Do not convert topic wording alone into a filter unless the user explicitly asks to constrain the search.
@@ -67,6 +73,7 @@ If the user does not explicitly request filtering, pass only the raw semantic qu
 ## Search Execution
 
 - Always use the internal database.
+- Use the database only by passing it to `cvquery`.
 - Pass one raw `QUERY` positional argument to `cvquery`.
 - Pass query filters through `cvquery` flags only when constrained retrieval is needed.
 - Run `cvquery` against that database path.

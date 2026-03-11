@@ -16,6 +16,7 @@ Use this fixed internal workspace-local database:
 - `./.rag-tool/docs.db`
 
 This path is fixed. Do not vary it during normal skill use.
+In `search` mode, use this path only as the `cvquery` database argument.
 
 ## Resolve Input
 
@@ -66,6 +67,10 @@ Do not load both mode files unless the request truly spans both workflows.
 ## Stable Doc IDs
 
 `doc` ids must be deterministic across store and search runs.
+
+When the user provides a source path, filename, or explicit document title,
+derive `doc` directly from that source identity in both modes before running any
+tool.
 
 Derive a lowercase kebab-case `doc` from one stable source identity:
 

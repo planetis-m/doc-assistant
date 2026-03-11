@@ -76,7 +76,8 @@ Also provide `cvstore --source=RELATIVEPATH` on ingest so stored rows keep a use
 
 Apply these rules:
 
-- Derive `doc` from the stable document identity, such as `chapter1`.
+- Derive `doc` directly from the same stable source identity that will later be
+  available in search mode, such as `chapter1`.
 - Use `--kind=source` for original material or faithful transcription.
 - Use `--kind=derived` for generated or rewritten material, including notes, lectures, quizzes, flashcards, essays, and summaries.
 - `page` should follow the source's own numbering when available, such as page or slide numbers.
