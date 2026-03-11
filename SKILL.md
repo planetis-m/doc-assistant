@@ -1,6 +1,6 @@
 ---
 name: rag-tool
-description: Prepare text or markdown documents for semantic storage and retrieval, including chunking, labeling, storing, refreshing, and searching document collections. Use when a task involves adding notes, transcripts, or source documents to a reusable retrieval store, or searching previously stored material with optional metadata filters.
+description: Manages text and markdown documents for semantic storage and retrieval. Use this skill to chunk, label, store, refresh, and search document collections within a reusable vector store, optionally utilizing metadata filters.
 ---
 
 # RAG Tool
@@ -53,8 +53,8 @@ Use `store` for requests such as:
 Use `search` for requests such as:
 
 - search my notes
-- find what the source says about dropout
-- query the stored material for regularization
+- find what the source says about the new policy
+- query the stored material for project guidelines
 
 After choosing the mode, load only the relevant mode reference:
 
