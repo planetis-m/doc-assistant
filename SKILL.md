@@ -16,7 +16,6 @@ Use this fixed internal workspace-local database:
 - `./.rag-tool/docs.db`
 
 This path is fixed. Do not vary it during normal skill use.
-In `search` mode, use this path only as the `cvquery` database argument.
 
 ## Resolve Input
 

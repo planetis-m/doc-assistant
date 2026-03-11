@@ -22,10 +22,6 @@ Example:
 Why does dropout reduce overfitting?
 ```
 
-- Build `QUERY` from the user's wording.
-- If the user asks for "all results" within explicit filters and gives no topical
-  query, use a neutral query derived from that wording.
-
 Query filter behavior is expressed on the `cvquery` command line:
 
 - `doc` is exact match
@@ -52,10 +48,10 @@ Treat these as explicit filtering requests:
 
 Infer these filters:
 
-- `doc` only when the user explicitly requests filtering and the stable document identity is clear, using the same source-to-`doc` scheme as store mode
+- `doc` only when the user explicitly requests filtering and the stable document identity is clear, using the same scheme as store mode
 - `kind=source` from cues like `source`, `original`, or `transcript`
 - `kind=derived` from cues like `derived`, `notes`, `summary`, `quiz`, or `flashcards`
-- `page` only from explicit page references that clearly map to the source's own numbering
+- `page` only from explicit page references that clearly map to the stored numbering scheme
 - `label` only when the user explicitly filters by topic or scoped subject, using stable topic phrases such as `Regularization`, `Vector Search`, or `Chain Rule`
 
 When the user names a source path, filename, or explicit document title, derive
