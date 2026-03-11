@@ -7,14 +7,13 @@ Path policy:
 - Never install into a relative workspace path such as `./.local/...`.
 - Never create `.local` under the current project directory.
 
+As of March 11, 2026 (`chunkvec` latest release), release assets exist for:
+- Linux `x86_64`
+- macOS `arm64`
+- Windows `x86_64`
+
 Release page:
 - `https://github.com/planetis-m/chunkvec/releases/latest`
-
-Runtime layout:
-- Keep `cvstore`, `cvquery`, `config.json`, and the platform `vector` runtime
-  library in the same real directory.
-- Do not copy only the binaries into another directory without their runtime
-  files.
 
 ## Linux x86_64
 
@@ -61,25 +60,23 @@ Invoke-WebRequest -Uri "https://github.com/planetis-m/chunkvec/releases/latest/d
 Remove-Item -Recurse -Force (Join-Path $dst "current") -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path (Join-Path $dst "current") | Out-Null
 Expand-Archive -Path $zip -DestinationPath (Join-Path $dst "current") -Force
-$current = Join-Path $dst "current"
-$env:Path = "$current;$env:Path"
+$store = Get-ChildItem -Path (Join-Path $dst "current") -Recurse -Filter "cvstore.exe" | Select-Object -First 1
+$storeDir = Split-Path -Parent $store.FullName
+$env:Path = "$storeDir;$env:Path"
 cvstore --help | Out-Null
 cvquery --help | Out-Null
 ```
 
 ## DeepInfra API key configuration
 
-`cvstore` and `cvquery` require an API key. After installation, present these
-instructions to the user before running ingest or search.
+`cvstore` and `cvquery` require an API key. After installation, present these instructions to the user before running ingest or search.
 
 **Recommended: environment variable**
 Linux/macOS: `export DEEPINFRA_API_KEY="your_api_key"`
 Windows PowerShell: `$env:DEEPINFRA_API_KEY = "your_api_key"`
 
 **Alternative: update config.json**
-Create or edit `config.json` inside the directory where the real binaries live
-and set:
-
+Create or edit `config.json` inside the directory where the real binaries live (e.g., `~/.local/opt/chunkvec/current/`) and set:
 ```json
 {
   "api_key": "your_deepinfra_api_key"
@@ -88,8 +85,8 @@ and set:
 
 ## Notes
 
-- `chunkvec` reads `config.json` from the real app directory, not the current
-  workspace.
-- If install fails due to permission or sandbox restrictions, request escalated
-  permission and retry.
-- If the user already has `cvstore` and `cvquery`, do not reinstall them.
+- Keep all extracted runtime files (`config.json`, `vector`, and platform shared libs) with the real binaries.
+- Do not copy only `cvstore`/`cvquery` or `cvstore.exe`/`cvquery.exe` into another directory without bundled runtime files.
+- Ensure install targets are under user home (`$HOME/.local` or `%USERPROFILE%\\.local`), not the current workspace.
+- If install fails due to permission/sandbox restrictions, request escalated permission and retry.
+- If platform/architecture is unsupported, stop and ask the user for manual installation steps.

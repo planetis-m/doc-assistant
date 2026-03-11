@@ -1,16 +1,14 @@
 # Search Mode
 
-Use this mode when the user wants retrieval from the document database.
+Use this mode when the user wants retrieval from stored content.
 
 ## Command Shape
 
 Run search with:
 
 ```bash
-cvquery [--doc=DOC] [--kind=source|derived] [--page=N] [--label=TEXT] QUERY DB.sqlite
+cvquery [--doc=DOC] [--kind=source|derived] [--page=N] [--label=TEXT] QUERY
 ```
-
-Use the internal database path from `SKILL.md`.
 
 ## Query Input
 
@@ -68,11 +66,8 @@ If the user does not explicitly request filtering, pass only the raw semantic qu
 
 ## Search Execution
 
-- Always use the internal database.
-- Use the database only by passing it to `cvquery`.
 - Pass one raw `QUERY` positional argument to `cvquery`.
 - Pass query filters through `cvquery` flags only when constrained retrieval is needed.
-- Run `cvquery` against that database path.
 - Use only the filters the user actually needs.
 
 ## Outputting Results

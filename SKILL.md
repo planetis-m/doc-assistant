@@ -9,14 +9,6 @@ Follow this workflow exactly to prepare document content for storage and retriev
 
 Do not add verification steps unless the user explicitly asks for them.
 
-## Internal Paths
-
-Use this fixed internal workspace-local database:
-
-- `./.rag-tool/docs.db`
-
-This path is fixed. Do not vary it during normal skill use.
-
 ## Resolve Input
 
 Always preprocess the text yourself before running `cvstore` or `cvquery`.
@@ -41,14 +33,14 @@ Always preprocess the text yourself before running `cvstore` or `cvquery`.
 
 Map user intent into one of these two modes:
 
-- `store`: the user wants to add or refresh content in the database
-- `search`: the user wants retrieval from the database
+- `store`: the user wants to add or refresh content
+- `search`: the user wants retrieval from stored content
 
 Use `store` for requests such as:
 
 - store this file
 - ingest these notes
-- add this document to the workspace database
+- add this document
 
 Use `search` for requests such as:
 

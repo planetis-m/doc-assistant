@@ -7,7 +7,7 @@
 
 It provides two modes:
 - `store`: chunk text, assign stable topic labels, and store it with `cvstore`
-- `search`: search the stored database with `cvquery`, using filters only when
+- `search`: search stored material with `cvquery`, using filters only when
   the user explicitly asks to narrow scope
 
 This skill is designed for source material that needs to be stored and searched
@@ -39,7 +39,7 @@ Copy or clone this skill directory into your agent's scanned skills path as
 ## Modes
 
 ### Store
-Use `store` when the user wants to add material to the search database.
+Use `store` when the user wants to add material.
 
 ```text
 Use $rag-tool in store mode on notes.md.
@@ -54,7 +54,7 @@ Use $rag-tool to store derived notes for chapter1.md.
 ```
 
 ### Search
-Use `search` when the user wants to retrieve from the stored material.
+Use `search` when the user wants to retrieve from stored material.
 
 ```text
 Use $rag-tool in search mode for: how do embeddings help search?

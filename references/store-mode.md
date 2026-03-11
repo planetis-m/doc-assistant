@@ -1,6 +1,6 @@
 # Store Mode
 
-Use this mode when the user wants to add or refresh content in the document database.
+Use this mode when the user wants to add or refresh content.
 
 ## Contents
 
@@ -16,10 +16,8 @@ Use this mode when the user wants to add or refresh content in the document data
 Run ingest with:
 
 ```bash
-cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt DB.sqlite
+cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt
 ```
-
-Use the internal database path from `SKILL.md`.
 
 ## Chunking
 
@@ -114,14 +112,11 @@ Rules:
 
 ## Store Execution
 
-- Always use the internal database.
 - Derive stable `doc` ids and pass them via `cvstore --doc=...`.
 - Pass `--kind=source` or `--kind=derived` on `cvstore`.
 - Pass `--source` when a meaningful provenance path is known.
-- Run `cvstore` against that database path.
 - Never mix multiple `doc` or `kind` values in one ingest file.
 
 When providing `--source`, choose it with these rules:
 
 - if there is a real source path or stable logical artifact path, use that as `--source`
-- do not use an internal temporary file path as `--source`
