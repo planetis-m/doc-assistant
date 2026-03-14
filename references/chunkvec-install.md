@@ -3,9 +3,9 @@
 Use this only when `command -v cvstore` or `command -v cvquery` fails.
 
 Path policy:
-- Use absolute user paths only (`$HOME/.local/...`).
+- Install only to absolute user-space paths such as `$HOME/.local/...`.
 - Never install into a relative workspace path such as `./.local/...`.
-- Never create `.local` under the current project directory.
+- Never create `.local` inside the current project directory.
 
 As of March 11, 2026 (`chunkvec` latest release), release assets exist for:
 - Linux `x86_64`
@@ -69,14 +69,14 @@ cvquery --help | Out-Null
 
 ## DeepInfra API key configuration
 
-`cvstore` and `cvquery` require an API key. After installation, present these instructions to the user before running ingest or search.
+`cvstore` and `cvquery` require an API key. After installation, give the user these instructions before running ingest or search.
 
 **Recommended: environment variable**
 Linux/macOS: `export DEEPINFRA_API_KEY="your_api_key"`
 Windows PowerShell: `$env:DEEPINFRA_API_KEY = "your_api_key"`
 
 **Alternative: update config.json**
-Create or edit `config.json` inside the directory where the real binaries live (e.g., `~/.local/opt/chunkvec/current/`) and set:
+Create or edit `config.json` in the directory where the real binaries live (for example `~/.local/opt/chunkvec/current/`) and set:
 ```json
 {
   "api_key": "your_deepinfra_api_key"
@@ -86,7 +86,7 @@ Create or edit `config.json` inside the directory where the real binaries live (
 ## Notes
 
 - Keep all extracted runtime files (`config.json`, `vector`, and platform shared libs) with the real binaries.
-- Do not copy only `cvstore`/`cvquery` or `cvstore.exe`/`cvquery.exe` into another directory without bundled runtime files.
-- Ensure install targets are under user home (`$HOME/.local` or `%USERPROFILE%\\.local`), not the current workspace.
-- If install fails due to permission/sandbox restrictions, request escalated permission and retry.
+- Do not copy only `cvstore`/`cvquery` or `cvstore.exe`/`cvquery.exe` into another directory without the bundled runtime files.
+- Keep install targets under user home (`$HOME/.local` or `%USERPROFILE%\\.local`), not in the current workspace.
+- If installation fails because of permission or sandbox restrictions, request escalated permission and retry.
 - If platform/architecture is unsupported, stop and ask the user for manual installation steps.
