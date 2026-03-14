@@ -1,6 +1,6 @@
 # Store Mode
 
-Use this mode when the user wants to add or refresh content.
+Use this mode when the user wants to add content or refresh existing stored material.
 
 ## Contents
 
@@ -13,7 +13,7 @@ Use this mode when the user wants to add or refresh content.
 
 ## Command Shape
 
-Run ingest with:
+Ingest with:
 
 ```bash
 cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt
@@ -21,16 +21,16 @@ cvstore --doc=DOC --kind=source|derived [--source=RELATIVEPATH] INPUT.txt
 
 ## Chunking
 
-The chunking policy must align with the embedding model used by `cvstore`, which defaults to `Qwen/Qwen3-Embedding-0.6B`.
+Chunk for the embedding model used by `cvstore`, which defaults to `Qwen/Qwen3-Embedding-0.6B`.
 
-- Chunk by topic boundary, not by page shape.
-- Each chunk should cover one semantic unit or one tightly related concept cluster.
-- Preserve enough nearby context that the chunk still makes sense when retrieved alone.
+- Split on topic boundaries, not page layout.
+- Make each chunk cover one semantic unit or one tightly related concept cluster.
+- Keep enough nearby context that the chunk still makes sense when retrieved alone.
 - Split when the dominant topic, argument, procedure, or example changes.
 - Prefer sentence-boundary splits.
 - Keep short lead-in context with lists, definitions, formulas, or procedure steps so the embedding captures what the item is about.
-- Do not combine unrelated topics just to make a chunk longer.
-- Do not emit empty chunks.
+- Do not merge unrelated topics just to make a chunk longer.
+- Never emit empty chunks.
 
 Use moderately conservative chunk sizes:
 
@@ -41,7 +41,7 @@ Use moderately conservative chunk sizes:
 
 ## Topic Labels
 
-Use `label` when it improves retrieval grouping. It is optional, not required.
+Use `label` only when it improves retrieval grouping. It is optional.
 
 - Use short human-readable topic phrases, preferably `2-5` words.
 - Use stable Title Case noun phrases such as `Vector Search`, `Regularization`, or `Chain Rule`.
@@ -53,11 +53,11 @@ Use `label` when it improves retrieval grouping. It is optional, not required.
 - Keep labels descriptive but not overly specific.
 - Omit `label` when a chunk is still clear and useful without it.
 
-If the source needs more examples for chunking or label reuse, read [chunking-and-labels.md](chunking-and-labels.md).
+If you need more examples for chunking or label reuse, read [chunking-and-labels.md](chunking-and-labels.md).
 
 ## Metadata
 
-Split ingest metadata into two levels.
+Use two metadata levels.
 
 Global ingest metadata, passed once on `cvstore`:
 
@@ -70,14 +70,14 @@ Per-chunk metadata, written inside each `<chunk ...>` marker:
 - `page`: optional integer source locator within that `doc`, such as a page or slide number
 - `label`: optional short topic string
 
-Also provide `cvstore --source=RELATIVEPATH` on ingest so stored rows keep a useful provenance identity when that provenance is known.
+Also pass `cvstore --source=RELATIVEPATH` when a meaningful provenance path is known.
 
 Apply these rules:
 
 - Derive `doc` from the stable source identity, such as `chapter1`.
 - Use `--kind=source` for original material or faithful transcription.
 - Use `--kind=derived` for generated or rewritten material, including notes, lectures, quizzes, flashcards, essays, and summaries.
-- `page` should follow the source's own numbering when available, such as page or slide numbers.
+- Let `page` follow the source's own numbering when available, such as page or slide numbers.
 - Multiple chunks may share the same `page`. `chunkvec` keeps chunk order separately through `ordinal`.
 - Omit `page` when the source has no native numbering.
 - `label` is optional.
@@ -88,7 +88,7 @@ Apply these rules:
 
 ## Ingest Input
 
-Write the material as repeated `<chunk ...>` markers plus non-empty chunk bodies.
+Write the material as repeated `<chunk ...>` markers followed by non-empty chunk bodies.
 
 Example:
 
@@ -103,12 +103,12 @@ Regularization reduces overfitting by constraining model behavior.
 Rules:
 
 - Keep only the supported chunk-level metadata fields. Do not invent extra attributes.
-- Do not write `doc` or `kind` inside chunk markers.
+- Never write `doc` or `kind` inside chunk markers.
 - Use only `<chunk ...>` markers with optional `page` and `label` attributes.
-- Trim decorative boilerplate that hurts retrieval quality.
+- Remove only decorative boilerplate that hurts retrieval quality.
 - Keep chunk bodies non-empty and semantically coherent.
 - Prefer chunks that stand on their own during retrieval.
-- `label` is optional, not required.
+- `label` is optional.
 
 ## Store Execution
 
@@ -120,3 +120,4 @@ Rules:
 When providing `--source`, choose it with these rules:
 
 - if there is a real source path or stable logical artifact path, use that as `--source`
+- if there is no meaningful provenance path, omit `--source` rather than inventing one

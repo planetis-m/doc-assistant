@@ -5,33 +5,34 @@ description: Manages text and markdown documents for semantic storage and retrie
 
 # RAG Tool
 
-Follow this workflow exactly to prepare document content for storage and retrieval.
+Follow this workflow exactly when storing or retrieving document content.
 
-Do not add verification steps unless the user explicitly asks for them.
+Do not add verification steps unless the user explicitly asks.
 
 ## Resolve Input
 
-Always preprocess the text yourself before running `cvstore` or `cvquery`.
+Always resolve and clean the input yourself before running `cvstore` or `cvquery`.
 
 - Read plain text or markdown directly.
-- For PDFs or other binary documents, use a text transcription, not the binary file itself.
-- Do not use custom scripts or programmatic pipelines to generate cleaned input text.
-- Do not invent content that is not present in the source.
+- For PDFs or other binary documents, use extracted text, not the binary file itself.
+- Do not use scripts or programmatic pipelines to generate cleaned input text.
+- Do not invent or infer content that is not present in the source.
 - Rewrite only when needed to remove decorative boilerplate, repeated navigation text, or formatting noise that would hurt retrieval quality.
-- Preserve the source meaning. Do not add new facts.
+- Preserve the source meaning exactly. Do not add new facts.
 
 ## Tool Readiness
 
-- Check with `command -v cvstore` and `command -v cvquery`.
+- Check for `cvstore` and `cvquery` with `command -v`.
 - If either command is missing, read [references/chunkvec-install.md](references/chunkvec-install.md) and attempt installation.
-- Retry the missing check after installation. If the required command is still missing, stop and report.
-- Request unrestricted network or escalated execution directly in the tool call for `cvstore` and `cvquery`, since both require network access.
+- Check again after installation. If a required command is still missing, stop and report the failure.
+- Request unrestricted network or escalated execution directly in the tool call for `cvstore` and `cvquery`.
+  Do not run sandboxed probe calls first.
 - Do not inspect shell profiles, environment files, or arbitrary filesystem files to discover API keys.
 - If `cvstore` or `cvquery` reports an auth or config failure, report the error and ask the user to configure `DEEPINFRA_API_KEY` or `config.json`, then retry.
 
 ## Mode Selection
 
-Map user intent into one of these two modes:
+Map user intent into exactly one of these modes:
 
 - `store`: the user wants to add or refresh content
 - `search`: the user wants retrieval from stored content
@@ -48,7 +49,7 @@ Use `search` for requests such as:
 - find what the source says about the new policy
 - query the stored material for project guidelines
 
-After choosing the mode, load only the relevant mode reference:
+After choosing the mode, read only the matching mode reference:
 
 - `store` -> [references/store-mode.md](references/store-mode.md)
 - `search` -> [references/search-mode.md](references/search-mode.md)
@@ -57,19 +58,18 @@ Do not load both mode files unless the request truly spans both workflows.
 
 ## Stable Doc IDs
 
-`doc` ids must be deterministic across store and search runs.
+`doc` ids must stay deterministic across store and search runs.
 
 When the user provides a source path, filename, or explicit document title,
-derive `doc` directly from that source identity in both modes before running any
-tool.
+derive `doc` from that same source identity before running either tool.
 
 Derive a lowercase kebab-case `doc` from one stable source identity:
 
 - prefer the source file stem, such as `chapter1.md` -> `chapter1`
 - otherwise use an explicit logical title supplied by the user
-- do not invent a fresh one-off name when stable retrieval later may matter
+- do not invent a fresh one-off name when later retrieval may depend on stability
 
-Keep `doc` focused on the document identity.
+Keep `doc` focused on document identity, not artifact type.
 
 Examples:
 

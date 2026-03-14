@@ -1,12 +1,12 @@
 # Chunking And Labels
 
-Use this reference only when the source structure is not enough to decide chunk
-boundaries, label reuse, or explicit search filters.
+Use this reference only when the source structure alone is not enough to decide
+chunk boundaries, label reuse, or explicit search filters.
 
 ## Chunking Reminders
 
 - Keep each chunk on one dominant topic.
-- Keep enough nearby context that the chunk still answers a question when
+- Keep enough nearby context that the chunk can still answer a question when
   retrieved alone.
 - Reuse the same label across adjacent chunks that stay on the same topic.
 - Change the label only when the dominant topic shifts.
@@ -24,7 +24,7 @@ Dropout is a regularization method that disables random activations during
 training so the network cannot depend too heavily on a single pathway.
 ```
 
-Keep the same label because both chunks stay in the same retrieval group.
+Keep the same label because both chunks belong to the same retrieval group.
 
 ## Example: topic shift requires a new label
 
